@@ -5,18 +5,24 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
+
+import com.xiecc.seeWeather.common.PLog;
 import com.xiecc.seeWeather.component.RetrofitSingleton;
 import com.xiecc.seeWeather.modules.about.domain.VersionAPI;
 
 public class CheckVersion {
 
     public static void checkVersion(Context context) {
+
+        PLog.i("=====checkVersion begin");
+
         RetrofitSingleton.getInstance().fetchVersion()
             .subscribe(new SimpleSubscriber<VersionAPI>() {
                 @Override
                 public void onNext(VersionAPI versionAPI) {
                     String firVersionName = versionAPI.versionShort;
                     String currentVersionName = Util.getVersion(context);
+                    PLog.i("=====checkVersion firVersionName==" + firVersionName + "; currentVersionName==" + currentVersionName);
                     if (currentVersionName.compareTo(firVersionName) < 0) {
                         if (!SharedPreferenceUtil.getInstance().getString("version", "").equals(versionAPI.versionShort)) {
                             showUpdateDialog(versionAPI, context);

@@ -89,15 +89,18 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         initView();
+        PLog.i("======onViewCreated request");
         // https://github.com/tbruyelle/RxPermissions
         RxPermissions.getInstance(getActivity()).request(Manifest.permission.ACCESS_COARSE_LOCATION)
             .subscribe(granted -> {
+                PLog.i("======onViewCreated granted==" + granted);
                 if (granted) {
                     location();
                 } else {
                     load();
                 }
             });
+        //检查版本，用于升级
         CheckVersion.checkVersion(getActivity());
     }
 
@@ -124,7 +127,7 @@ public class MainFragment extends BaseFragment implements AMapLocationListener {
             mRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright,
                 android.R.color.holo_green_light,
                 android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
+                android.R.color.holo_red_light);//发生变化的颜色，依次进行
             mRefreshLayout.setOnRefreshListener(
                 () -> mRefreshLayout.postDelayed(this::load, 1000));
         }

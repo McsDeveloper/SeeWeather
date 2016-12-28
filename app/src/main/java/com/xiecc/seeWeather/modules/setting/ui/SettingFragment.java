@@ -32,6 +32,7 @@ import java.io.File;
 import rx.Observable;
 import rx.functions.Func1;
 
+//3.0之后推荐使用PreferenceFragment，不推荐PreferenceActivity （键对）
 public class SettingFragment extends PreferenceFragment
     implements Preference.OnPreferenceClickListener,
     Preference.OnPreferenceChangeListener {

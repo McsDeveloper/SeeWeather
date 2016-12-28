@@ -149,21 +149,21 @@ public class MultiCityFragment extends BaseFragment {
 
     private void multiLoad() {
         mWeathers.clear();
-        Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))
-            .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))
-            .map(cityORM -> Util.replaceCity(cityORM.getName()))
-            .distinct()
+        Observable.defer(() -> Observable.from(OrmLite.getInstance().query(CityORM.class)))//defer订阅后再执行
+            .doOnRequest(aLong -> mRefreshLayout.setRefreshing(true))//请求时，设置SwipeRefreshLayout刷新
+            .map(cityORM -> Util.replaceCity(cityORM.getName()))//CityORM.class转String
+            .distinct()//取消重复的数据流，发送不重复的
             .flatMap(s -> RetrofitSingleton.getInstance()
                 .getApiService()
                 .mWeatherAPI(s, C.KEY)
                 .map(weatherAPI -> weatherAPI.mHeWeatherDataService30s.get(0))
                 .compose(RxUtils.rxSchedulerHelper()))
-            .compose(this.bindUntilEvent(FragmentEvent.DESTROY_VIEW))
-            .filter(weather -> !C.UNKNOWN_CITY.equals(weather.status))
-            .take(3)
+            .compose(this.bindUntilEvent(FragmentEvent.DESTROY_VIEW))//复合操作
+            .filter(weather -> !C.UNKNOWN_CITY.equals(weather.status))//过滤掉UNKNOWN_CITY
+            .take(3)//take，只取数据流中的前面3项
             .doOnTerminate(() -> {
                 mRefreshLayout.setRefreshing(false);
-            })
+            })//当onCompleted或者onError时，这个会回调，此时停止SwipeRefreshLayout刷新progress
             .subscribe(new Observer<Weather>() {
                 @Override
                 public void onCompleted() {
